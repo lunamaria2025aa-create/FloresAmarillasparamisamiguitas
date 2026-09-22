@@ -87,29 +87,7 @@
             transform: translateY(0);
         }
 
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .file-input-wrapper input[type=file] {
-            font-size: 100px;
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-        }
-
-        audio {
-            height: 36px;
-            outline: none;
-            border-radius: 18px;
-            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
-        }
-
-        /* Instructions Modal toggle button */
+        /* Help button */
         .help-btn {
             position: absolute;
             bottom: 20px;
@@ -202,20 +180,6 @@
             font-family: monospace;
             color: #d62828;
         }
-
-        @media (max-width: 600px) {
-            .controls-panel {
-                flex-direction: column;
-                border-radius: 20px;
-                padding: 15px;
-                top: 10px;
-                width: 90%;
-            }
-            
-            audio {
-                width: 100%;
-            }
-        }
     </style>
 </head>
 <body>
@@ -225,18 +189,8 @@
         <canvas id="flowerCanvas"></canvas>
     </div>
 
-    <!-- Panel de Control e Audio MP3 -->
+    <!-- Panel de Control -->
     <div class="controls-panel">
-        <div class="file-input-wrapper">
-            <button class="btn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-                Cargar MP3
-            </button>
-            <input type="file" id="audioUpload" accept="audio/mp3, audio/*">
-        </div>
-
-        <audio id="audioPlayer" controls style="display: none;"></audio>
-
         <button class="btn" id="replayBtn">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
             Reiniciar
@@ -250,22 +204,17 @@
     <div class="modal" id="helpModal">
         <div class="modal-content">
             <span class="close-btn" id="closeHelpModal">&times;</span>
-            <h2>Pasos para publicar en GitHub</h2>
+            <h2>Pasos para publicar en GitHub Pages</h2>
             <ol>
                 <li>Guarda este código con el nombre exacto <code>index.html</code>.</li>
                 <li>Inicia sesión o regístrate en <a href="https://github.com" target="_blank">github.com</a>.</li>
                 <li>Crea un nuevo repositorio haciendo clic en el botón <strong>"+"</strong> -> <strong>New repository</strong>.</li>
-                <li>Nombra el repositorio (ejemplo: <code>girasoles</code>) y marca la opción <strong>Public</strong>. Clic en <strong>Create repository</strong>.</li>
+                <li>Nombra el repositorio (ejemplo: <code>girasoles</code>) y marca la opción <strong>Public</strong>. Haz clic en <strong>Create repository</strong>.</li>
                 <li>En la siguiente pantalla, usa la opción <strong>uploading an existing file</strong> y sube tu archivo <code>index.html</code>.</li>
-                <li>Para incluir una canción por defecto sin tener que cargarla manualmente cada vez:
-                    <ul>
-                        <li>Nombra tu archivo de audio como <code>musica.mp3</code> y súbelo junto al <code>index.html</code>.</li>
-                    </ul>
-                </li>
                 <li>Haz clic en <strong>Commit changes</strong>.</li>
                 <li>Ve a <strong>Settings</strong> -> <strong>Pages</strong> (en el menú izquierdo).</li>
                 <li>En <strong>Branch</strong> selecciona <code>main</code> (o <code>master</code>) y guarda (<strong>Save</strong>).</li>
-                <li>¡Listo! En un par de minutos tendrás tu enlace web público para compartir.</li>
+                <li>¡Listo! En un par de minutos tendrás tu enlace web público listo para compartir.</li>
             </ol>
         </div>
     </div>
@@ -288,32 +237,6 @@
         window.addEventListener('touchmove', (e) => {
             if (e.touches.length > 1) e.preventDefault();
         }, { passive: false });
-
-        // Configuración Audio MP3
-        const audioUpload = document.getElementById('audioUpload');
-        const audioPlayer = document.getElementById('audioPlayer');
-
-        audioUpload.addEventListener('change', function(e) {
-            const files = e.target.files;
-            if (files.length > 0) {
-                const url = URL.createObjectURL(files[0]);
-                audioPlayer.src = url;
-                audioPlayer.style.display = 'block';
-                audioPlayer.play();
-            }
-        });
-
-        // Detectar si existe un archivo musica.mp3 cargado en el mismo directorio (para GitHub Pages)
-        window.addEventListener('DOMContentLoaded', () => {
-            fetch('musica.mp3', { method: 'HEAD' })
-                .then(response => {
-                    if (response.ok) {
-                        audioPlayer.src = 'musica.mp3';
-                        audioPlayer.style.display = 'block';
-                    }
-                })
-                .catch(() => {});
-        });
 
         // Modal GitHub
         const helpModal = document.getElementById('helpModal');
@@ -390,7 +313,7 @@
             update(progress) {
                 if (progress < this.delay) return;
 
-                const localProgress = (progress - this.delay) * 2; // velocidad
+                const localProgress = (progress - this.delay) * 2;
                 if (this.growth < 1) {
                     this.growth = Math.min(1, localProgress);
                 } else if (this.bloom < 1) {
@@ -507,14 +430,13 @@
 
         let sunflowers = [];
         let startTime = null;
-        const animationDuration = 5000; // 5 segundos de crecimiento
+        const animationDuration = 5000;
 
         function initBouquet() {
             sunflowers = [];
             const centerX = width / 2;
             const centerY = height * 0.42;
 
-            // Distribución armónica del ramillete
             const positions = [
                 { x: 0, y: -20, scale: 1.1, delay: 0 },
                 { x: -70, y: -50, scale: 0.95, delay: 0.1 },
